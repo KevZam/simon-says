@@ -57,19 +57,21 @@ function checkAnswer(currentLevel) {
 }
 
 $(".btn").click(function (event) {
-  let userChosenColour = event.target.id;
-  playSound(userChosenColour);
-  animatePress(userChosenColour);
-  userClickedPattern.push(userChosenColour);
-  let indexOfLastAnswer = userClickedPattern.length - 1;
-  checkAnswer(indexOfLastAnswer);
+  if (gameStarted) {
+    let userChosenColour = event.target.id;
+    playSound(userChosenColour);
+    animatePress(userChosenColour);
+    userClickedPattern.push(userChosenColour);
+    let indexOfLastAnswer = userClickedPattern.length - 1;
+    checkAnswer(indexOfLastAnswer);
+  }
 });
 
 $(document).on("keydown", function () {
   if (!gameStarted) {
     nextSequence();
+    gameStarted = true;
   }
-  gameStarted = true;
 });
 
 function startOver() {
