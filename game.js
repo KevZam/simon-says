@@ -5,18 +5,15 @@ let level = 0;
 let gameStarted = false;
 
 function nextSequence() {
+  userClickedPattern = [];
   level++;
   $("h1").text("Level " + level);
   let randomNumber = Math.floor(Math.random() * 4);
   let randomChosenColour = buttonColors[randomNumber];
-
-  playSound(randomChosenColour);
   gamePattern.push(randomChosenColour);
 
-  $("#" + randomChosenColour).addClass("pressed");
-  setTimeout(function () {
-    $("#" + randomChosenColour).removeClass("pressed");
-  }, 300);
+  playSound(randomChosenColour);
+  animatePress(randomChosenColour);
 }
 
 function playSound(name) {
@@ -33,50 +30,50 @@ function animatePress(currentColor) {
 
 function checkAnswer(currentLevel) {
   if (userClickedPattern[currentLevel] === gamePattern[currentLevel]) {
-    console.log("success");
+    checkGameProgress();
   } else {
     let wrongSound = new Audio("sounds/wrong.mp3");
     wrongSound.play();
-    startOver();
+
     $("body").addClass("game-over");
     $("h1").text("Game over, Press Any Key to Restart");
     setTimeout(function () {
       $("body").removeClass("game-over");
     }, 200);
+    startOver();
   }
+}
 
-  if (
-    userClickedPattern.length === gamePattern.length &&
-    gameStarted === true
-  ) {
+function checkGameProgress() {
+  if (userClickedPattern.length === gamePattern.length) {
     setTimeout(function () {
       nextSequence();
-      userClickedPattern = [];
     }, 1000);
   }
 }
 
+// handle clicking
 $(".btn").click(function (event) {
-  if (gameStarted) {
-    let userChosenColour = event.target.id;
-    playSound(userChosenColour);
-    animatePress(userChosenColour);
-    userClickedPattern.push(userChosenColour);
-    let indexOfLastAnswer = userClickedPattern.length - 1;
-    checkAnswer(indexOfLastAnswer);
-  }
+  let userChosenColour = event.target.id;
+  playSound(userChosenColour);
+  animatePress(userChosenColour);
+  userClickedPattern.push(userChosenColour);
+  let indexOfLastAnswer = userClickedPattern.length - 1;
+  checkAnswer(indexOfLastAnswer);
 });
 
+// handle start game
 $(document).on("keydown", function () {
   if (!gameStarted) {
     nextSequence();
     gameStarted = true;
+  } else {
+    console.log("game already in progress");
   }
 });
 
 function startOver() {
-  level = 0;
-  userClickedPattern = [];
-  gamePattern = [];
   gameStarted = false;
+  level = 0;
+  gamePattern = [];
 }
